@@ -5,12 +5,18 @@ public class PlayerMovement : MonoBehaviour
 {
     private float horizontal;
     private float vertical;
+    private float coyoteTime = 0.2f;
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
+    private float jumpBufferTime = 0.2f;
 
     [SerializeField] private float speed = 8f;
     [SerializeField] private float jumpingPower = 16f;
     private bool isFacingRight = true;
 
     private bool isDashing;
+    private bool isJumping;
+
     private bool canHorizontalDash = true;
     private bool canVerticalDash = true;
     
@@ -27,26 +33,54 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         if (isDashing) return;
-
         horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-
-        // Trigger different dash types based on input
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (IsGrounded())
         {
-            if (vertical > 0 && canVerticalDash)
-                StartCoroutine(Dash(true)); // Vertical Dash
-            else if (canHorizontalDash)
-                StartCoroutine(Dash(false)); // Horizontal Dash
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
         }
 
-        Flip();
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
+        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+
+            jumpBufferCounter = 0f;
+
+            StartCoroutine(JumpCooldown());
+        }
+
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+
+            coyoteTimeCounter = 0f;
+
+
+
+            // Trigger different dash types based on input
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                if (vertical > 0 && canVerticalDash)
+                    StartCoroutine(Dash(true)); // Vertical Dash
+                else if (canHorizontalDash)
+                    StartCoroutine(Dash(false)); // Horizontal Dash
+            }
+
+            Flip();
+        }
     }
 
     private void FixedUpdate()
@@ -71,44 +105,51 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-private IEnumerator Dash(bool isVertical)
-{
-    // Check cooldown before proceeding
-    if (isVertical && !canVerticalDash) yield break;
-    if (!isVertical && !canHorizontalDash) yield break;
-
-    float originalGravity = rb.gravityScale;
-    rb.gravityScale = 0f;
-    isDashing = true;
-
-    // Adjust dash direction based on type
-    float dashDirectionX = isVertical ? 0f : (horizontal != 0 ? horizontal : transform.localScale.x);
-    float dashDirectionY = isVertical ? 1f : vertical;
-
-    rb.velocity = new Vector2(dashDirectionX * dashingPower, dashDirectionY * dashingPower);
-
-    tr.emitting = true;
-    yield return new WaitForSeconds(dashingTime);
-    tr.emitting = false;
-
-    // **Fix: Reset velocity after dash**
-    rb.velocity = Vector2.zero; // Prevents continued movement after dash ends
-
-    rb.gravityScale = originalGravity;
-    isDashing = false;
-
-    // Apply cooldown separately based on dash type
-    if (isVertical)
+    private IEnumerator Dash(bool isVertical)
     {
-        canVerticalDash = false;
-        yield return new WaitForSeconds(verticalDashCooldown);
-        canVerticalDash = true;
+        // Check cooldown before proceeding
+        if (isVertical && !canVerticalDash) yield break;
+        if (!isVertical && !canHorizontalDash) yield break;
+
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        isDashing = true;
+
+        // Adjust dash direction based on type
+        float dashDirectionX = isVertical ? 0f : (horizontal != 0 ? horizontal : transform.localScale.x);
+        float dashDirectionY = isVertical ? 1f : vertical;
+
+        rb.velocity = new Vector2(dashDirectionX * dashingPower, dashDirectionY * dashingPower);
+
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+
+        // **Fix: Reset velocity after dash**
+        rb.velocity = Vector2.zero; // Prevents continued movement after dash ends
+
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+
+        // Apply cooldown separately based on dash type
+        if (isVertical)
+        {
+            canVerticalDash = false;
+            yield return new WaitForSeconds(verticalDashCooldown);
+            canVerticalDash = true;
+        }
+        else
+        {
+            canHorizontalDash = false;
+            yield return new WaitForSeconds(horizontalDashCooldown);
+            canHorizontalDash = true;
+        }
+        
     }
-    else
+   private IEnumerator JumpCooldown()
     {
-        canHorizontalDash = false;
-        yield return new WaitForSeconds(horizontalDashCooldown);
-        canHorizontalDash = true;
+        isJumping = true;
+        yield return new WaitForSeconds(0.4f);
+        isJumping = false;
     }
-}
 }
