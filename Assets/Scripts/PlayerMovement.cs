@@ -3,100 +3,108 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // --- 🏃 Player Movement Variables ---
     private float horizontal;
     private float vertical;
-    private float coyoteTime = 0.2f;
+
+    // --- ⏳ Jump Timing Variables ---
+    private float coyoteTime = 0.2f; 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private float jumpBufferTime = 0.2f;
 
-    [SerializeField] private float speed = 8f;
-    [SerializeField] private float jumpingPower = 16f;
-    private bool isFacingRight = true;
+    // --- ⚙️ Movement & Physics Settings ---
+    [SerializeField] private float speed = 8f;         
+    [SerializeField] private float jumpingPower = 16f;  
+    private bool isFacingRight = true;                
 
-    private bool isDashing;
-    private bool isJumping;
-
-    private bool canHorizontalDash = true;
-    private bool canVerticalDash = true;
+    // --- ✨ Dash System ---
+    private bool isDashing;          
+    private bool isJumping;          
+    private bool hasDashed;          
     
-    [SerializeField] private float dashingPower = 24f;
-    [SerializeField] private float dashingTime = 0.2f;
-    [SerializeField] private float horizontalDashCooldown = 1f; // Cooldown for horizontal dash
-    [SerializeField] private float verticalDashCooldown = 2f; // Cooldown for vertical dash
+    [SerializeField] private float dashingPower = 40f;  
+    [SerializeField] private float dashingTime = 0.3f;  
 
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private TrailRenderer tr;
+    // --- 🔧 Unity Components ---
+    [SerializeField] private Rigidbody2D rb;        
+    [SerializeField] private Transform groundCheck; 
+    [SerializeField] private LayerMask groundLayer; 
+    [SerializeField] private TrailRenderer tr;      
 
     private void Update()
     {
         if (isDashing) return;
-        horizontal = Input.GetAxisRaw("Horizontal");
+        
+        horizontal = Input.GetAxisRaw("Horizontal"); 
+        vertical = Input.GetAxisRaw("Vertical");     
 
-        if (IsGrounded())
-        {
-            coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            coyoteTimeCounter -= Time.deltaTime;
-        }
-
-        if (Input.GetButtonDown("Jump"))
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-
-            jumpBufferCounter = 0f;
-
-            StartCoroutine(JumpCooldown());
-        }
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-
-            coyoteTimeCounter = 0f;
-
-
-
-            // Trigger different dash types based on input
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                if (vertical > 0 && canVerticalDash)
-                    StartCoroutine(Dash(true)); // Vertical Dash
-                else if (canHorizontalDash)
-                    StartCoroutine(Dash(false)); // Horizontal Dash
-            }
-
-            Flip();
-        }
+        HandleJump(); 
+        HandleDash(); 
+        Flip();      
     }
 
     private void FixedUpdate()
     {
         if (isDashing) return;
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+
+        if (IsGrounded()) hasDashed = false; 
     }
 
+    // --- 🦘 Jump Logic ---
+    private void HandleJump()
+    {
+        if (IsGrounded())
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+
+        if (Input.GetButtonDown("Jump"))
+            jumpBufferCounter = jumpBufferTime;
+        else
+            jumpBufferCounter -= Time.deltaTime;
+
+        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            jumpBufferCounter = 0f;
+            StartCoroutine(JumpCooldown());
+        }
+
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            coyoteTimeCounter = 0f;
+        }
+
+        if (!isDashing)
+            rb.velocity = new Vector2(horizontal * speed * 0.8f, rb.velocity.y); 
+    }
+
+    // --- ⚡ Omnidirectional Dash Logic ---
+    private void HandleDash()
+    {
+        if (!Input.GetKeyDown(KeyCode.LeftShift) || hasDashed) return;
+
+        Vector2 dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if (dashDirection == Vector2.zero)
+            dashDirection = isFacingRight ? Vector2.right : Vector2.left;
+
+        StartCoroutine(Dash(dashDirection));
+    }
+
+    // --- 🏗 Ground Check Logic ---
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
+    // --- 🔄 Flip Character Direction ---
     private void Flip()
     {
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
+        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
         {
             isFacingRight = !isFacingRight;
             Vector3 localScale = transform.localScale;
@@ -105,51 +113,30 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private IEnumerator Dash(bool isVertical)
+    // --- 🚀 Omnidirectional Dash Execution ---
+    private IEnumerator Dash(Vector2 direction)
     {
-        // Check cooldown before proceeding
-        if (isVertical && !canVerticalDash) yield break;
-        if (!isVertical && !canHorizontalDash) yield break;
-
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
+        hasDashed = true;
         isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0.3f; // Retain slight fall effect during dash
 
-        // Adjust dash direction based on type
-        float dashDirectionX = isVertical ? 0f : (horizontal != 0 ? horizontal : transform.localScale.x);
-        float dashDirectionY = isVertical ? 1f : vertical;
+        rb.velocity = direction.normalized * dashingPower; 
 
-        rb.velocity = new Vector2(dashDirectionX * dashingPower, dashDirectionY * dashingPower);
-
-        tr.emitting = true;
+        tr.emitting = true; 
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
 
-        // **Fix: Reset velocity after dash**
-        rb.velocity = Vector2.zero; // Prevents continued movement after dash ends
-
+        rb.velocity *= 0.6f; // Preserves slight momentum after dash for fluidity
         rb.gravityScale = originalGravity;
         isDashing = false;
-
-        // Apply cooldown separately based on dash type
-        if (isVertical)
-        {
-            canVerticalDash = false;
-            yield return new WaitForSeconds(verticalDashCooldown);
-            canVerticalDash = true;
-        }
-        else
-        {
-            canHorizontalDash = false;
-            yield return new WaitForSeconds(horizontalDashCooldown);
-            canHorizontalDash = true;
-        }
-        
     }
-   private IEnumerator JumpCooldown()
+
+    // --- ⏳ Jump Cooldown Logic ---
+    private IEnumerator JumpCooldown()
     {
         isJumping = true;
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.4f); 
         isJumping = false;
     }
 }
