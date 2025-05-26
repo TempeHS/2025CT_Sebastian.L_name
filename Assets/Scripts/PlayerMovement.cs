@@ -3,22 +3,22 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // --- 🏃 Player Movement Variables ---
+    // ---  Player Movement ---
     private float horizontal;
     private float vertical;
 
-    // --- ⏳ Jump Timing Variables ---
+    // ---  Jump Timing  ---
     private float coyoteTime = 0.2f; 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private float jumpBufferTime = 0.2f;
 
-    // --- ⚙️ Movement & Physics Settings ---
+    // --- Movement Physics Settings ---
     [SerializeField] private float speed = 8f;         
     [SerializeField] private float jumpingPower = 16f;  
     private bool isFacingRight = true;                
 
-    // --- ✨ Dash System ---
+    // ---  Dash System ---
     private bool isDashing;          
     private bool isJumping;          
     private bool hasDashed;          
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashingPower = 40f;  
     [SerializeField] private float dashingTime = 0.3f;  
 
-    // --- 🔧 Unity Components ---
+    // ---  Unity Components ---
     [SerializeField] private Rigidbody2D rb;        
     [SerializeField] private Transform groundCheck; 
     [SerializeField] private LayerMask groundLayer; 
@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
         if (IsGrounded()) hasDashed = false; 
     }
 
-    // --- 🦘 Jump Logic ---
+    // ---  Jump ---
     private void HandleJump()
     {
         if (IsGrounded())
@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(horizontal * speed * 0.8f, rb.velocity.y); 
     }
 
-    // --- ⚡ Omnidirectional Dash Logic ---
+    // ---  Omnidirectional Dash ---
     private void HandleDash()
     {
         if (!Input.GetKeyDown(KeyCode.LeftShift) || hasDashed) return;
@@ -95,13 +95,13 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(Dash(dashDirection));
     }
 
-    // --- 🏗 Ground Check Logic ---
+    // ---  Ground Check ---
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
-    // --- 🔄 Flip Character Direction ---
+    // ---  Flip Character Direction ---
     private void Flip()
     {
         if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
