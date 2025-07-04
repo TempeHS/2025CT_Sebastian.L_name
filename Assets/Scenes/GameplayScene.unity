@@ -1636,9 +1636,10 @@ GameObject:
   - component: {fileID: 850467597}
   - component: {fileID: 850467596}
   - component: {fileID: 850467595}
+  - component: {fileID: 850467598}
   m_Layer: 0
   m_Name: Onion-ezgif.com-gif-to-sprite-converter_0
-  m_TagString: Untagged
+  m_TagString: collectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1724,13 +1725,48 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 850467594}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.48, y: 85.45, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2.5885224, y: -2.334816, z: 1.1381879}
   m_LocalScale: {x: 0.5875, y: 0.4375, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 996127462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &850467598
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850467594}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.15633564, y: 0.28866142}
+  serializedVersion: 2
+  m_Radius: 1.0161835
 --- !u!1 &927152047
 GameObject:
   m_ObjectHideFlags: 0
@@ -1870,7 +1906,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 996127462}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Collectible
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1889,7 +1925,8 @@ Transform:
   m_LocalPosition: {x: 2.8914776, y: 87.78481, z: -1.1381879}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 850467597}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1018711932
@@ -2314,6 +2351,51 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 6.5217896, y: 0.62756985}
   m_EdgeRadius: 0
+--- !u!1 &1133015426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1133015428}
+  - component: {fileID: 1133015427}
+  m_Layer: 0
+  m_Name: CoinManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1133015427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133015426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53921ae37560d2b42867ceb0e2926c05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinCount: 0
+--- !u!4 &1133015428
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133015426}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.867037, y: 87.40262, z: -1.1319752}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1230251782
 GameObject:
   m_ObjectHideFlags: 0
@@ -3603,6 +3685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4d7fcbbf5edcbd4f951192f14341a4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cm: {fileID: 1133015427}
   maxSpeed: 8
   acceleration: 60
   deceleration: 30
@@ -3906,4 +3989,4 @@ SceneRoots:
   - {fileID: 614593141}
   - {fileID: 1097622531}
   - {fileID: 996127462}
-  - {fileID: 850467597}
+  - {fileID: 1133015428}

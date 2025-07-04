@@ -302,16 +302,17 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public CoinManager cm;
     // --- 🏃 Player Movement Variables ---
     private float horizontal;
     private float vertical;
 
     // --- ⏳ Jump Timing Variables ---
-    private float coyoteTime = 0.2f; 
+    private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private float jumpBufferTime = 0.2f;
-
+    
     // --- ⚙️ Movement & Physics Settings ---
     [SerializeField] private float maxSpeed = 8f;
     [SerializeField] private float acceleration = 60f;
@@ -450,4 +451,12 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(0.4f);
         isJumping = false;
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("collectable"))
+            Destroy(other.gameObject);
+            cm.coinCount++;
+    }
+
 }
