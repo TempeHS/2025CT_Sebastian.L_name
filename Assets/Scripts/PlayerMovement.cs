@@ -367,7 +367,16 @@ public class PlayerMovement : MonoBehaviour
         {
             hasDashed = false;
             jumpBufferCounter = 0f;
-        }
+        } 
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Object"))
+        {
+            Destroy(this.gameObject);
+    }
+
     }
 
     private void HandleJumpBuffering()
