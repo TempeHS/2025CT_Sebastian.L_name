@@ -29,18 +29,23 @@ public class ObjectFallController : MonoBehaviour
             Debug.LogError("Player Transform not assigned on ObjectFallController!");
 
         InvokeRepeating(nameof(Fall), wait, wait);
+        int fall = gameObject.layer;                          // must be set to FallingObjects
+        //int platform = LayerMask.NameToLayer("objects");
+        //Physics2D.IgnoreLayerCollision(fall, platform, true);
     }
 
     void Fall()
     {
 
-    int idx = Random.Range(0, fallingObjects.Length);
-    Vector3 spawnPos = new Vector3(
-        player.position.x + Random.Range(-horizontalRange, horizontalRange),
-        player.position.y + verticalOffset,
-        0f
-    );
-    Instantiate(fallingObjects[idx], spawnPos, Quaternion.identity);
+        int idx = Random.Range(0, fallingObjects.Length);
+        Vector3 spawnPos = new Vector3(
+            player.position.x + Random.Range(-horizontalRange, horizontalRange),
+            player.position.y + verticalOffset,
+            0f
+        );
+        Instantiate(fallingObjects[idx], spawnPos, Quaternion.identity);
 
     }
+    
+    
 }
