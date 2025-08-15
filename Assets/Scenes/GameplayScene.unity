@@ -1178,7 +1178,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wait: 2
   fallingObjects:
-  - {fileID: 4924296571271431055, guid: 87a9407644133f6408e884eb4cfeab56, type: 3}
+  - {fileID: 5324837347732922221, guid: d35e66198aa6c1d41b3f21ff200b3577, type: 3}
+  - {fileID: 2680120062082031721, guid: 36989755c822c0046bc7d31e6e01cf65, type: 3}
   player: {fileID: 2084267799}
   horizontalRange: 10
   verticalOffset: 10
