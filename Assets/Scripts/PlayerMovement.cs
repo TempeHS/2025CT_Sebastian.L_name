@@ -1,338 +1,62 @@
-/*
-using System.Collections;
-using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
-{
-    // ---  Player Movement ---
-    private float horizontal;
-    private float vertical;
-
-    // ---  Jump Timing  ---
-    private float coyoteTime = 0.2f;
-    private float coyoteTimeCounter;
-    private float jumpBufferCounter;
-    private float jumpBufferTime = 0.2f;
-
-    // --- Movement Physics Settings ---
-    [SerializeField] private float speed = 8f;
-    [SerializeField] private float jumpingPower = 16f;
-    private bool isFacingRight = true;
-
-    // ---  Dash System ---
-    private bool isDashing;
-    private bool isJumping;
-    private bool hasDashed;
-
-    [SerializeField] private float dashingPower = 40f;
-    [SerializeField] private float dashingTime = 0.3f;
-
-    // ---  Unity Components ---
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private TrailRenderer tr;
-
-    private void Update()
-    {
-        if (isDashing) return;
-
-        horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
-
-        HandleJump();
-        HandleDash();
-        Flip();
-    }
-
-    private void FixedUpdate()
-    {
-        if (isDashing) return;
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-
-        if (IsGrounded()) hasDashed = false;
-    }
-
-    // ---  Jump ---
-    private void HandleJump()
-    {
-        if (IsGrounded())
-            coyoteTimeCounter = coyoteTime;
-        else
-            coyoteTimeCounter -= Time.deltaTime;
-
-        if (Input.GetButtonDown("Jump"))
-            jumpBufferCounter = jumpBufferTime;
-        else
-            jumpBufferCounter -= Time.deltaTime;
-
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            jumpBufferCounter = 0f;
-            StartCoroutine(JumpCooldown());
-        }
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            coyoteTimeCounter = 0f;
-        }
-
-        if (!isDashing)
-            rb.velocity = new Vector2(horizontal * speed * 0.8f, rb.velocity.y);
-    }
-
-    // ---  Omnidirectional Dash ---
-    private void HandleDash()
-    {
-        if (!Input.GetKeyDown(KeyCode.LeftShift) || hasDashed) return;
-
-        Vector2 dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
-        if (dashDirection == Vector2.zero)
-            dashDirection = isFacingRight ? Vector2.right : Vector2.left;
-
-        StartCoroutine(Dash(dashDirection));
-    }
-
-    // ---  Ground Check ---
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-    }
-
-    // ---  Flip Character Direction ---
-    private void Flip()
-    {
-        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
-        {
-            isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-        }
-    }
-
-    // --- 🚀 Omnidirectional Dash Execution ---
-    private IEnumerator Dash(Vector2 direction)
-    {
-        hasDashed = true;
-        isDashing = true;
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0.3f; // Retain slight fall effect during dash
-
-        rb.velocity = direction.normalized * dashingPower;
-
-        tr.emitting = true;
-        yield return new WaitForSeconds(dashingTime);
-        tr.emitting = false;
-
-        rb.velocity *= 0.6f; // Preserves slight momentum after dash for fluidity
-        rb.gravityScale = originalGravity;
-        isDashing = false;
-    }
-
-    // --- ⏳ Jump Cooldown Logic ---
-    private IEnumerator JumpCooldown()
-    {
-        isJumping = true;
-        yield return new WaitForSeconds(0.4f);
-        isJumping = false;
-    }
-}
-*/
-
-/*
-using System.Collections;
-using UnityEngine;
-
-public class PlayerMovement : MonoBehaviour
-{
-    // --- 🏃 Player Movement Variables ---
-    private float horizontal;
-    private float vertical;
-
-    // --- ⏳ Jump Timing Variables ---
-    private float coyoteTime = 0.2f; 
-    private float coyoteTimeCounter;
-    private float jumpBufferCounter;
-    private float jumpBufferTime = 0.2f; // Jump buffering duration
-
-    // --- ⚙️ Movement & Physics Settings ---
-    [SerializeField] private float speed = 8f;         
-    [SerializeField] private float jumpingPower = 16f;  
-    private bool isFacingRight = true;                
-
-    // --- ✨ Dash System ---
-    private bool isDashing;          
-    private bool isJumping;          
-    private bool hasDashed;          
-    
-    [SerializeField] private float dashingPower = 40f;  
-    [SerializeField] private float dashingTime = 0.3f;  
-
-    // --- 🔧 Unity Components ---
-    [SerializeField] private Rigidbody2D rb;        
-    [SerializeField] private Transform groundCheck; 
-    [SerializeField] private LayerMask groundLayer; 
-    [SerializeField] private TrailRenderer tr;      
-
-    private void Update()
-    {
-        if (isDashing) return;
-        
-        horizontal = Input.GetAxisRaw("Horizontal"); 
-        vertical = Input.GetAxisRaw("Vertical");     
-
-        HandleJumpBuffering(); // Buffers jump inputs
-        HandleJump(); 
-        HandleDash(); 
-        Flip();      
-    }
-
-    private void FixedUpdate()
-    {
-        if (isDashing) return;
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-
-        if (IsGrounded()) 
-        {
-            hasDashed = false; 
-            jumpBufferCounter = 0f; // Reset jump buffer when grounded
-        }
-    }
-
-    // --- 🔄 Jump Buffering ---
-    private void HandleJumpBuffering()
-    {
-        if (Input.GetButtonDown("Jump"))
-            jumpBufferCounter = jumpBufferTime; // Stores jump input temporarily
-        else
-            jumpBufferCounter -= Time.deltaTime; // Decreases buffer timer
-    }
-
-    // --- 🦘 Jump Logic ---
-    private void HandleJump()
-    {
-        if (IsGrounded())
-            coyoteTimeCounter = coyoteTime;
-        else
-            coyoteTimeCounter -= Time.deltaTime;
-
-        // Check if buffered jump should be executed
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            jumpBufferCounter = 0f;
-            StartCoroutine(JumpCooldown());
-        }
-
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            coyoteTimeCounter = 0f;
-        }
-
-        if (!isDashing)
-            rb.velocity = new Vector2(horizontal * speed * 0.8f, rb.velocity.y); 
-    }
-
-    // --- ⚡ Omnidirectional Dash Logic ---
-    private void HandleDash()
-    {
-        if (!Input.GetKeyDown(KeyCode.LeftShift) || hasDashed) return;
-
-        Vector2 dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
-        if (dashDirection == Vector2.zero)
-            dashDirection = isFacingRight ? Vector2.right : Vector2.left;
-
-        StartCoroutine(Dash(dashDirection));
-    }
-
-    // --- 🏗 Ground Check Logic ---
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-    }
-
-    // --- 🔄 Flip Character Direction ---
-    private void Flip()
-    {
-        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
-        {
-            isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
-        }
-    }
-
-    // --- 🚀 Omnidirectional Dash Execution ---
-    private IEnumerator Dash(Vector2 direction)
-    {
-        hasDashed = true;
-        isDashing = true;
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0.3f; 
-
-        rb.velocity = direction.normalized * dashingPower; 
-
-        tr.emitting = true; 
-        yield return new WaitForSeconds(dashingTime);
-        tr.emitting = false;
-
-        rb.velocity *= 0.6f; // Preserves slight momentum after dash
-        rb.gravityScale = originalGravity;
-        isDashing = false;
-    }
-
-    // --- ⏳ Jump Cooldown Logic ---
-    private IEnumerator JumpCooldown()
-    {
-        isJumping = true;
-        yield return new WaitForSeconds(0.4f); 
-        isJumping = false;
-    }
-}
-*/
 using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
     public CoinManager cm;
-    // --- 🏃 Player Movement Variables ---
+
+    // --- Movement Input ---
     private float horizontal;
     private float vertical;
 
-    // --- ⏳ Jump Timing Variables ---
+    // --- Jump Timing ---
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
     private float jumpBufferTime = 0.2f;
-    
-    // --- ⚙️ Movement & Physics Settings ---
+
+    // --- Movement Settings ---
     [SerializeField] private float maxSpeed = 8f;
     [SerializeField] private float acceleration = 60f;
     [SerializeField] private float deceleration = 30f;
+    [SerializeField] private float airControlMultiplier = 0.5f;
     [SerializeField] private float jumpingPower = 16f;
     private bool isFacingRight = true;
 
-    // --- ✨ Dash System ---
+    // --- Dash System ---
     private bool isDashing;
     private bool isJumping;
     private bool hasDashed;
-
+    private bool canDoubleJump;
     [SerializeField] private float dashingPower = 40f;
     [SerializeField] private float dashingTime = 0.3f;
+    [SerializeField] private float dashCooldown = 1f;
+    private float dashCooldownTimer = 0f;
 
-    // --- 🔧 Unity Components ---
+    // --- Wall & Ledge ---
+    [SerializeField] private Transform wallCheckLeft;
+    [SerializeField] private Transform wallCheckRight;
+    [SerializeField] private Transform ledgeCheck;
+    [SerializeField] private LayerMask wallLayer;
+    private bool isTouchingWall;
+    private bool isWallSliding;
+    private bool isGrabbingLedge;
+
+    // --- Unity Components ---
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
+    [SerializeField] private ParticleSystem jumpParticles;
+    [SerializeField] private ParticleSystem dashParticles;
+    [SerializeField] private ParticleSystem deathParticles;
+    private Animator anim;
+
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+    }
 
     private void Update()
     {
@@ -341,47 +65,43 @@ public class PlayerMovement : MonoBehaviour
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
 
+        dashCooldownTimer -= Time.deltaTime;
+
+        HandleWallSlide();
         HandleJumpBuffering();
         HandleJump();
         HandleDash();
         Flip();
+        UpdateAnimationStates();
     }
 
     private void FixedUpdate()
     {
         if (isDashing) return;
 
-        // Smooth acceleration/deceleration logic
         float targetSpeed = horizontal * maxSpeed;
         float speedDiff = targetSpeed - rb.velocity.x;
         float accelRate = Mathf.Abs(targetSpeed) > 0.01f ? acceleration : deceleration;
-        float force = speedDiff * accelRate;
+        float control = IsGrounded() ? 1f : airControlMultiplier;
+        float force = speedDiff * accelRate * control;
 
         rb.AddForce(new Vector2(force, 0f));
 
-        // Clamp max horizontal speed
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
 
         if (IsGrounded())
         {
             hasDashed = false;
+            canDoubleJump = true;
             jumpBufferCounter = 0f;
-        } 
+        }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Object"))
-        {
-            Destroy(this.gameObject);
-    }
-
-    }
-
+    // --- FIXED: Jump now uses Space key directly ---
     private void HandleJumpBuffering()
     {
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.Space))
             jumpBufferCounter = jumpBufferTime;
         else
             jumpBufferCounter -= Time.deltaTime;
@@ -394,29 +114,43 @@ public class PlayerMovement : MonoBehaviour
         else
             coyoteTimeCounter -= Time.deltaTime;
 
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping)
+        if ((coyoteTimeCounter > 0f || isWallSliding) && jumpBufferCounter > 0f && !isJumping)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            Vector2 jumpDir = isWallSliding ? new Vector2(-horizontal, 1f).normalized : Vector2.up;
+            rb.velocity = new Vector2(rb.velocity.x, 0f); // reset Y velocity
+            rb.AddForce(jumpDir * jumpingPower, ForceMode2D.Impulse);
             jumpBufferCounter = 0f;
             StartCoroutine(JumpCooldown());
+            jumpParticles?.Play();
+        }
+        else if (canDoubleJump && jumpBufferCounter > 0f && !IsGrounded())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            canDoubleJump = false;
+            jumpBufferCounter = 0f;
+            StartCoroutine(JumpCooldown());
+            jumpParticles?.Play();
         }
 
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        if (Input.GetKeyUp(KeyCode.Space) && rb.velocity.y > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
     }
 
+    // --- FIXED: Dash now uses right-click and safe Camera.main check ---
     private void HandleDash()
     {
-        if (!Input.GetKeyDown(KeyCode.LeftShift) || hasDashed) return;
+        if (!Input.GetMouseButtonDown(1) || hasDashed || dashCooldownTimer > 0f) return;
 
-        Vector2 dashDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        Vector3 mouseWorldPos = Camera.main != null
+            ? Camera.main.ScreenToWorldPoint(Input.mousePosition)
+            : transform.position + Vector3.right;
 
-        if (dashDirection == Vector2.zero)
-            dashDirection = isFacingRight ? Vector2.right : Vector2.left;
+        Vector2 dashDirection = (mouseWorldPos - transform.position).normalized;
 
+        dashCooldownTimer = dashCooldown;
         StartCoroutine(Dash(dashDirection));
     }
 
@@ -427,8 +161,9 @@ public class PlayerMovement : MonoBehaviour
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0.3f;
 
-        rb.velocity = direction.normalized * dashingPower;
+        rb.velocity = direction * dashingPower;
         tr.emitting = true;
+        dashParticles?.Play();
 
         yield return new WaitForSeconds(dashingTime);
 
@@ -438,9 +173,30 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
     }
 
+    private IEnumerator JumpCooldown()
+    {
+        isJumping = true;
+        yield return new WaitForSeconds(0.4f);
+        isJumping = false;
+    }
+
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
+
+    private void HandleWallSlide()
+    {
+        bool touchingLeft = Physics2D.OverlapCircle(wallCheckLeft.position, 0.1f, wallLayer);
+        bool touchingRight = Physics2D.OverlapCircle(wallCheckRight.position, 0.1f, wallLayer);
+        isTouchingWall = touchingLeft || touchingRight;
+
+        isWallSliding = isTouchingWall && !IsGrounded() && horizontal != 0;
+
+        if (isWallSliding)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -2f));
+        }
     }
 
     private void Flip()
@@ -454,18 +210,38 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private IEnumerator JumpCooldown()
+    private void UpdateAnimationStates()
     {
-        isJumping = true;
-        yield return new WaitForSeconds(0.4f);
-        isJumping = false;
+        if (anim == null) return;
+
+        anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
+        anim.SetBool("isGrounded", IsGrounded());
+        anim.SetBool("isDashing", isDashing);
+        anim.SetBool("isWallSliding", isWallSliding);
+        anim.SetFloat("verticalVelocity", rb.velocity.y);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Object"))
+        {
+            deathParticles?.Play();
+            StartCoroutine(Die());
+        }
+    }
+
+    private IEnumerator Die()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("collectable"))
+        {
             Destroy(other.gameObject);
             cm.coinCount++;
+        }
     }
-
 }
