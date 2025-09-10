@@ -7977,7 +7977,7 @@ Transform:
   m_GameObject: {fileID: 1947430123}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.23, y: -1.25, z: 0}
+  m_LocalPosition: {x: -0.092, y: -1.195, z: 0}
   m_LocalScale: {x: 0.9375, y: 1.4625, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7998,6 +7998,7 @@ GameObject:
   - component: {fileID: 2084267801}
   - component: {fileID: 2084267802}
   - component: {fileID: 2084267803}
+  - component: {fileID: 2084267804}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -8285,12 +8286,11 @@ MonoBehaviour:
   deceleration: 30
   airControlMultiplier: 0.5
   jumpingPower: 16
-  dashingPower: 20
-  dashingTime: 0.3
+  dashDistance: 12
+  dashDuration: 0.15
   dashCooldown: 1
   wallCheckLeft: {fileID: 0}
   wallCheckRight: {fileID: 0}
-  ledgeCheck: {fileID: 0}
   wallLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -8299,7 +8299,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  tr: {fileID: 2084267801}
   jumpParticles: {fileID: 0}
   dashParticles: {fileID: 0}
   deathParticles: {fileID: 0}
@@ -8313,7 +8312,7 @@ Animator:
   m_GameObject: {fileID: 2084267794}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: af410a44802d0524b9c6a35176fb0117, type: 2}
+  m_Controller: {fileID: 9100000, guid: d96909728ab6a3645beb05310fb5d004, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -8324,6 +8323,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!111 &2084267804
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2084267794}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 13fd3e5816231e94aa33dfc4bb6b437e, type: 2}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -1,5 +1,5 @@
-
 using System.Collections;
+using System.Collections.Generic;    // ← for HashSet
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,13 +8,10 @@ public class PlayerMovement : MonoBehaviour
 
     // --- Movement Input ---
     private float horizontal;
-    private float vertical;
 
     // --- Jump Timing ---
-    private float coyoteTime = 0.2f;
-    private float coyoteTimeCounter;
-    private float jumpBufferCounter;
-    private float jumpBufferTime = 0.2f;
+    private float coyoteTime = 0.2f, coyoteTimeCounter;
+    private float jumpBufferTime = 0.2f, jumpBufferCounter;
 
     // --- Movement Settings ---
     [SerializeField] private float maxSpeed = 8f;
@@ -22,226 +19,218 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float deceleration = 30f;
     [SerializeField] private float airControlMultiplier = 0.5f;
     [SerializeField] private float jumpingPower = 16f;
-    private bool isFacingRight = true;
 
-    // --- Dash System ---
-    private bool isDashing;
-    private bool isJumping;
-    private bool hasDashed;
-    private bool canDoubleJump;
-    [SerializeField] private float dashingPower = 40f;
-    [SerializeField] private float dashingTime = 0.3f;
+    // --- Dash Settings ---
+    [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashDuration = 0.15f;
     [SerializeField] private float dashCooldown = 1f;
-    private float dashCooldownTimer = 0f;
+    private float dashCooldownTimer;
+    private bool isDashing, hasDashed;
 
-    // --- Wall & Ledge ---
+    // --- Wall Slide ---
     [SerializeField] private Transform wallCheckLeft;
     [SerializeField] private Transform wallCheckRight;
-    [SerializeField] private Transform ledgeCheck;
     [SerializeField] private LayerMask wallLayer;
-    private bool isTouchingWall;
     private bool isWallSliding;
-    private bool isGrabbingLedge;
 
     // --- Unity Components ---
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private TrailRenderer tr;
     [SerializeField] private ParticleSystem jumpParticles;
     [SerializeField] private ParticleSystem dashParticles;
     [SerializeField] private ParticleSystem deathParticles;
     private Animator anim;
+    private bool isFacingRight = true;
+
+    // ← Declare the HashSet to cache animator parameters
+    private HashSet<string> _animParams;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+
+        // Populate the HashSet with all parameter names
+        _animParams = new HashSet<string>();
+        foreach (var p in anim.parameters)
+            _animParams.Add(p.name);
     }
 
     private void Update()
     {
-        if (isDashing) return;
+        if (!isDashing)
+        {
+            horizontal = Input.GetAxisRaw("Horizontal");
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-        vertical = Input.GetAxisRaw("Vertical");
+            // Jump buffering
+            if (Input.GetButtonDown("Jump"))
+                jumpBufferCounter = jumpBufferTime;
+            else
+                jumpBufferCounter -= Time.deltaTime;
 
-        dashCooldownTimer -= Time.deltaTime;
+            // Dash cooldown
+            dashCooldownTimer -= Time.deltaTime;
 
-        HandleWallSlide();
-        HandleJumpBuffering();
-        HandleJump();
-        HandleDash();
-        Flip();
-        UpdateAnimationStates();
+            HandleWallSlide();
+            HandleJump();
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.LeftShift))
+                TryDash();
+            Flip();
+        }
+
+        UpdateAnimations();
     }
 
     private void FixedUpdate()
     {
         if (isDashing) return;
 
+        // Smooth accel/decel
         float targetSpeed = horizontal * maxSpeed;
         float speedDiff = targetSpeed - rb.velocity.x;
         float accelRate = Mathf.Abs(targetSpeed) > 0.01f ? acceleration : deceleration;
         float control = IsGrounded() ? 1f : airControlMultiplier;
-        float force = speedDiff * accelRate * control;
+        rb.AddForce(Vector2.right * speedDiff * accelRate * control);
 
-        rb.AddForce(new Vector2(force, 0f));
-
+        // Clamp speed
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
 
+        // Reset dash availability when grounded
         if (IsGrounded())
-        {
             hasDashed = false;
-            canDoubleJump = true;
-            jumpBufferCounter = 0f;
-        }
-    }
-
-    // --- FIXED: Jump now uses Space key directly ---
-    private void HandleJumpBuffering()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-            jumpBufferCounter = jumpBufferTime;
-        else
-            jumpBufferCounter -= Time.deltaTime;
     }
 
     private void HandleJump()
     {
-        if (IsGrounded())
-            coyoteTimeCounter = coyoteTime;
-        else
-            coyoteTimeCounter -= Time.deltaTime;
+        // Coyote time countdown
+        if (IsGrounded()) coyoteTimeCounter = coyoteTime;
+        else coyoteTimeCounter -= Time.deltaTime;
 
-        if ((coyoteTimeCounter > 0f || isWallSliding) && jumpBufferCounter > 0f && !isJumping)
-        {
-            Vector2 jumpDir = isWallSliding ? new Vector2(-horizontal, 1f).normalized : Vector2.up;
-            rb.velocity = new Vector2(rb.velocity.x, 0f); // reset Y velocity
-            rb.AddForce(jumpDir * jumpingPower, ForceMode2D.Impulse);
-            jumpBufferCounter = 0f;
-            StartCoroutine(JumpCooldown());
-            jumpParticles?.Play();
-        }
-        else if (canDoubleJump && jumpBufferCounter > 0f && !IsGrounded())
+        // Execute jump when buffered & in coyote window
+        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            canDoubleJump = false;
             jumpBufferCounter = 0f;
-            StartCoroutine(JumpCooldown());
-            jumpParticles?.Play();
-        }
-
-        if (Input.GetKeyUp(KeyCode.Space) && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            coyoteTimeCounter = 0f;
+            jumpParticles.Play();
         }
     }
 
-    // --- FIXED: Dash now uses right-click and safe Camera.main check ---
-    private void HandleDash()
+    private void TryDash()
     {
-        if (!Input.GetMouseButtonDown(1) || hasDashed || dashCooldownTimer > 0f) return;
+        if (hasDashed || dashCooldownTimer > 0f) return;
 
-        Vector3 mouseWorldPos = Camera.main != null
-            ? Camera.main.ScreenToWorldPoint(Input.mousePosition)
-            : transform.position + Vector3.right;
+        Vector3 m = Input.mousePosition;
+        m.z = -Camera.main.transform.position.z;
+        Vector3 world = Camera.main.ScreenToWorldPoint(m);
+        Vector2 dir = ((Vector2)world - rb.position).normalized;
 
-        Vector2 dashDirection = (mouseWorldPos - transform.position).normalized;
-
+        StartCoroutine(DashRoutine(dir));
         dashCooldownTimer = dashCooldown;
-        StartCoroutine(Dash(dashDirection));
-    }
-
-    private IEnumerator Dash(Vector2 direction)
-    {
         hasDashed = true;
+    }
+
+    private IEnumerator DashRoutine(Vector2 dir)
+    {
         isDashing = true;
-        float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0.3f;
+        float origGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        dashParticles.Play();
 
-        rb.velocity = direction * dashingPower;
-        tr.emitting = true;
-        dashParticles?.Play();
+        Vector2 start = rb.position;
+        Vector2 end = start + dir * dashDistance;
+        float elapsed = 0f;
 
-        yield return new WaitForSeconds(dashingTime);
+        while (elapsed < dashDuration)
+        {
+            rb.MovePosition(Vector2.Lerp(start, end, elapsed / dashDuration));
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
 
-        tr.emitting = false;
-        rb.velocity *= 0.6f;
-        rb.gravityScale = originalGravity;
+        rb.MovePosition(end);
+        rb.gravityScale = origGravity;
         isDashing = false;
-    }
-
-    private IEnumerator JumpCooldown()
-    {
-        isJumping = true;
-        yield return new WaitForSeconds(0.4f);
-        isJumping = false;
-    }
-
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     private void HandleWallSlide()
     {
-        bool touchingLeft = Physics2D.OverlapCircle(wallCheckLeft.position, 0.1f, wallLayer);
-        bool touchingRight = Physics2D.OverlapCircle(wallCheckRight.position, 0.1f, wallLayer);
-        isTouchingWall = touchingLeft || touchingRight;
+        if (wallCheckLeft == null || wallCheckRight == null)
+        {
+            Debug.LogWarning(
+                "Wall-check transforms not assigned on PlayerMovement. Skipping wall slide.",
+                this
+            );
+            isWallSliding = false;
+            return;
+        }
 
-        isWallSliding = isTouchingWall && !IsGrounded() && horizontal != 0;
+        bool leftTouch = Physics2D.OverlapCircle(
+            wallCheckLeft.position, 0.1f, wallLayer
+        );
+        bool rightTouch = Physics2D.OverlapCircle(
+            wallCheckRight.position, 0.1f, wallLayer
+        );
+        isWallSliding = (leftTouch || rightTouch)
+                        && !IsGrounded()
+                        && rb.velocity.y < 0f;
 
         if (isWallSliding)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -2f));
-        }
+            rb.velocity = new Vector2(
+                rb.velocity.x,
+                Mathf.Max(rb.velocity.y, -2f)
+            );
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(
+            groundCheck.position, 0.2f, groundLayer
+        );
     }
 
     private void Flip()
     {
-        if ((isFacingRight && horizontal < 0f) || (!isFacingRight && horizontal > 0f))
+        if ((horizontal > 0 && !isFacingRight) ||
+            (horizontal < 0 && isFacingRight))
         {
             isFacingRight = !isFacingRight;
-            Vector3 localScale = transform.localScale;
-            localScale.x *= -1f;
-            transform.localScale = localScale;
+            Vector3 s = transform.localScale;
+            s.x *= -1f;
+            transform.localScale = s;
         }
     }
 
-    private void UpdateAnimationStates()
+    private void UpdateAnimations()
     {
         if (anim == null) return;
 
-        anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
-        anim.SetBool("isGrounded", IsGrounded());
-        anim.SetBool("isDashing", isDashing);
-        anim.SetBool("isWallSliding", isWallSliding);
-        anim.SetFloat("verticalVelocity", rb.velocity.y);
+        // Only set these if they exist in the Animator
+        if (_animParams.Contains("isRunning"))
+            anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
+
+        if (_animParams.Contains("isGrounded"))
+            anim.SetBool("isGrounded", IsGrounded());
+
+        if (_animParams.Contains("isWallSliding"))
+            anim.SetBool("isWallSliding", isWallSliding);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Object"))
         {
-            deathParticles?.Play();
-            StartCoroutine(Die());
+            deathParticles.Play();
+            Destroy(gameObject, 0.5f);
         }
-    }
-
-    private IEnumerator Die()
-    {
-        yield return new WaitForSeconds(0.5f);
-        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("collectable"))
+        if (other.CompareTag("collectable"))
         {
-            Destroy(other.gameObject);
             cm.coinCount++;
+            Destroy(other.gameObject);
         }
     }
 }
