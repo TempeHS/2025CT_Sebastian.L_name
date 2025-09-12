@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;    // ← for HashSet
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -10,22 +10,28 @@ public class PlayerMovement : MonoBehaviour
     private float horizontal;
 
     // --- Jump Timing ---
-    private float coyoteTime = 0.2f, coyoteTimeCounter;
-    private float jumpBufferTime = 0.2f, jumpBufferCounter;
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float jumpBufferTime = 0.2f;
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
 
     // --- Movement Settings ---
     [SerializeField] private float maxSpeed = 8f;
-    [SerializeField] private float acceleration = 60f;
-    [SerializeField] private float deceleration = 30f;
-    [SerializeField] private float airControlMultiplier = 0.5f;
+    [SerializeField] private float acceleration = 100f;
+    [SerializeField] private float deceleration = 80f;
+    [SerializeField] private float airControlMultiplier = 0.6f;
     [SerializeField] private float jumpingPower = 16f;
 
     // --- Dash Settings ---
-    [SerializeField] private float dashDistance = 5f;
+    [SerializeField] private float dashDistance = 6f;
     [SerializeField] private float dashDuration = 0.15f;
     [SerializeField] private float dashCooldown = 1f;
     private float dashCooldownTimer;
     private bool isDashing, hasDashed;
+
+    // --- Dash Preview ---
+    [SerializeField] private LineRenderer dashPreview;
+    [SerializeField] private Color previewColor = Color.cyan;
 
     // --- Wall Slide ---
     [SerializeField] private Transform wallCheckLeft;
@@ -42,18 +48,22 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private ParticleSystem deathParticles;
     private Animator anim;
     private bool isFacingRight = true;
-
-    // ← Declare the HashSet to cache animator parameters
     private HashSet<string> _animParams;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
-
-        // Populate the HashSet with all parameter names
         _animParams = new HashSet<string>();
         foreach (var p in anim.parameters)
             _animParams.Add(p.name);
+
+        if (dashPreview != null)
+        {
+            dashPreview.positionCount = 2;
+            dashPreview.enabled = true;
+            dashPreview.startColor = previewColor;
+            dashPreview.endColor = previewColor;
+        }
     }
 
     private void Update()
@@ -68,13 +78,19 @@ public class PlayerMovement : MonoBehaviour
             else
                 jumpBufferCounter -= Time.deltaTime;
 
+            // Coyote time
+            coyoteTimeCounter = IsGrounded() ? coyoteTime : coyoteTimeCounter - Time.deltaTime;
+
             // Dash cooldown
             dashCooldownTimer -= Time.deltaTime;
 
             HandleWallSlide();
             HandleJump();
+            HandleDashPreview();
+
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.LeftShift))
                 TryDash();
+
             Flip();
         }
 
@@ -85,47 +101,43 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDashing) return;
 
-        // Smooth accel/decel
         float targetSpeed = horizontal * maxSpeed;
         float speedDiff = targetSpeed - rb.velocity.x;
         float accelRate = Mathf.Abs(targetSpeed) > 0.01f ? acceleration : deceleration;
         float control = IsGrounded() ? 1f : airControlMultiplier;
+
         rb.AddForce(Vector2.right * speedDiff * accelRate * control);
 
-        // Clamp speed
         if (Mathf.Abs(rb.velocity.x) > maxSpeed)
             rb.velocity = new Vector2(Mathf.Sign(rb.velocity.x) * maxSpeed, rb.velocity.y);
 
-        // Reset dash availability when grounded
         if (IsGrounded())
             hasDashed = false;
     }
 
     private void HandleJump()
     {
-        // Coyote time countdown
-        if (IsGrounded()) coyoteTimeCounter = coyoteTime;
-        else coyoteTimeCounter -= Time.deltaTime;
-
-        // Execute jump when buffered & in coyote window
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             jumpBufferCounter = 0f;
-            jumpParticles.Play();
+            jumpParticles?.Play();
         }
+
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
     }
 
     private void TryDash()
     {
         if (hasDashed || dashCooldownTimer > 0f) return;
 
-        Vector3 m = Input.mousePosition;
-        m.z = -Camera.main.transform.position.z;
-        Vector3 world = Camera.main.ScreenToWorldPoint(m);
-        Vector2 dir = ((Vector2)world - rb.position).normalized;
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = -Camera.main.transform.position.z;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector2 dashDir = ((Vector2)worldPos - rb.position).normalized;
 
-        StartCoroutine(DashRoutine(dir));
+        StartCoroutine(DashRoutine(dashDir));
         dashCooldownTimer = dashCooldown;
         hasDashed = true;
     }
@@ -133,66 +145,57 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator DashRoutine(Vector2 dir)
     {
         isDashing = true;
-        float origGravity = rb.gravityScale;
+        float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
-        dashParticles.Play();
+        dashParticles?.Play();
+
+        rb.velocity = dir * dashDistance / dashDuration;
+        yield return new WaitForSeconds(dashDuration);
+
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+    }
+
+    private void HandleDashPreview()
+    {
+        if (dashPreview == null) return;
+
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = -Camera.main.transform.position.z;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+        Vector2 dashDir = ((Vector2)worldPos - rb.position).normalized;
 
         Vector2 start = rb.position;
-        Vector2 end = start + dir * dashDistance;
-        float elapsed = 0f;
+        Vector2 end = start + dashDir * dashDistance;
 
-        while (elapsed < dashDuration)
-        {
-            rb.MovePosition(Vector2.Lerp(start, end, elapsed / dashDuration));
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        rb.MovePosition(end);
-        rb.gravityScale = origGravity;
-        isDashing = false;
+        dashPreview.SetPosition(0, start);
+        dashPreview.SetPosition(1, end);
     }
 
     private void HandleWallSlide()
     {
         if (wallCheckLeft == null || wallCheckRight == null)
         {
-            Debug.LogWarning(
-                "Wall-check transforms not assigned on PlayerMovement. Skipping wall slide.",
-                this
-            );
             isWallSliding = false;
             return;
         }
 
-        bool leftTouch = Physics2D.OverlapCircle(
-            wallCheckLeft.position, 0.1f, wallLayer
-        );
-        bool rightTouch = Physics2D.OverlapCircle(
-            wallCheckRight.position, 0.1f, wallLayer
-        );
-        isWallSliding = (leftTouch || rightTouch)
-                        && !IsGrounded()
-                        && rb.velocity.y < 0f;
+        bool leftTouch = Physics2D.OverlapCircle(wallCheckLeft.position, 0.1f, wallLayer);
+        bool rightTouch = Physics2D.OverlapCircle(wallCheckRight.position, 0.1f, wallLayer);
+        isWallSliding = (leftTouch || rightTouch) && !IsGrounded() && rb.velocity.y < 0f;
 
         if (isWallSliding)
-            rb.velocity = new Vector2(
-                rb.velocity.x,
-                Mathf.Max(rb.velocity.y, -2f)
-            );
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, -2f));
     }
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(
-            groundCheck.position, 0.2f, groundLayer
-        );
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
     private void Flip()
     {
-        if ((horizontal > 0 && !isFacingRight) ||
-            (horizontal < 0 && isFacingRight))
+        if ((horizontal > 0 && !isFacingRight) || (horizontal < 0 && isFacingRight))
         {
             isFacingRight = !isFacingRight;
             Vector3 s = transform.localScale;
@@ -205,7 +208,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (anim == null) return;
 
-        // Only set these if they exist in the Animator
         if (_animParams.Contains("isRunning"))
             anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
 
@@ -220,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Object"))
         {
-            deathParticles.Play();
+            deathParticles?.Play();
             Destroy(gameObject, 0.5f);
         }
     }
@@ -234,3 +236,4 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 }
+

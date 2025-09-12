@@ -22835,14 +22835,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cm: {fileID: 1133015427}
+  coyoteTime: 0.2
+  jumpBufferTime: 0.2
   maxSpeed: 8
   acceleration: 60
   deceleration: 30
-  airControlMultiplier: 1
+  airControlMultiplier: 0.1
   jumpingPower: 16
   dashDistance: 5
   dashDuration: 0.25
   dashCooldown: 0.5
+  dashPreview: {fileID: 0}
+  previewColor: {r: 0, g: 1, b: 1, a: 1}
   wallCheckLeft: {fileID: 755408806}
   wallCheckRight: {fileID: 1315906912}
   wallLayer:
