@@ -204,19 +204,25 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void UpdateAnimations()
-    {
-        if (anim == null) return;
+private void UpdateAnimations()
+{
+    if (anim == null) return;
 
-        if (_animParams.Contains("isRunning"))
-            anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
+    if (_animParams.Contains("isRunning"))
+        anim.SetBool("isRunning", Mathf.Abs(horizontal) > 0.01f);
 
-        if (_animParams.Contains("isGrounded"))
-            anim.SetBool("isGrounded", IsGrounded());
+    if (_animParams.Contains("isGrounded"))
+        anim.SetBool("isGrounded", IsGrounded());
 
-        if (_animParams.Contains("isWallSliding"))
-            anim.SetBool("isWallSliding", isWallSliding);
-    }
+    if (_animParams.Contains("isWallSliding"))
+        anim.SetBool("isWallSliding", isWallSliding);
+
+    if (_animParams.Contains("moveDirection"))
+        anim.SetFloat("moveDirection", horizontal);
+
+    if (_animParams.Contains("verticalVelocity"))
+        anim.SetFloat("verticalVelocity", rb.velocity.y);
+}
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
