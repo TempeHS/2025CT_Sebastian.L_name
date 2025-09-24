@@ -219,9 +219,10 @@ private void UpdateAnimations()
 
     if (_animParams.Contains("moveDirection"))
         anim.SetFloat("moveDirection", horizontal);
+        horizontal = Input.GetAxisRaw("Horizontal");
 
     if (_animParams.Contains("verticalVelocity"))
-        anim.SetFloat("verticalVelocity", rb.velocity.y);
+            anim.SetFloat("verticalVelocity", rb.velocity.y);
 }
 
     private void OnCollisionEnter2D(Collision2D collision)
