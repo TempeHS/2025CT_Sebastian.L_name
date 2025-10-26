@@ -24,23 +24,23 @@ The objective of the game is to collect all the necessary ingredients to make so
 
 ##Videos Used
 
-[2D platformer animations - Game Code Library]([url](https://www.youtube.com/watch?v=Sg_w8hIbp4Y&t=295s&pp=0gcJCQYKAYcqIYzv
+[2D platformer animations - Game Code Library]((https://www.youtube.com/watch?v=Sg_w8hIbp4Y&t=295s&pp=0gcJCQYKAYcqIYzv
 ))
 [Platformer Dash - Bendux
-]([url](https://www.youtube.com/watch?v=2kFGmuPHiA0&t=51s
+]((https://www.youtube.com/watch?v=2kFGmuPHiA0&t=51s
 ))
 [Scrolling Background - Root Games
-]([url](https://www.youtube.com/watch?v=Wz3nbQPYwss&t=8s
+]((https://www.youtube.com/watch?v=Wz3nbQPYwss&t=8s
 ))
 [Tilemap and rule tiles - Pixel Pete
-]([url](https://www.youtube.com/watch?v=rC55Q7p90qs
+]((https://www.youtube.com/watch?v=rC55Q7p90qs
 ))
 [Tilemaps + Collision
-]([url](https://www.youtube.com/watch?v=8UctaO5DwUE&pp=0gcJCQYKAYcqIYzv
+]((https://www.youtube.com/watch?v=8UctaO5DwUE&pp=0gcJCQYKAYcqIYzv
 ))
 [Falling obstacles - Game code library
-]([url](https://www.youtube.com/watch?v=xx1oKVTU_gM&t=181s
+]((https://www.youtube.com/watch?v=xx1oKVTU_gM&t=181s
 ))
 [Coin system - MoreBBLAKEYY
-]([url](https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=109s
+]((https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=109s
 ))
