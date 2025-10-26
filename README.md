@@ -2,58 +2,38 @@
 
 Ramen Run
 
-:goberserk:
+# General Information
 
-This game was made a part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
+## Description
+This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
 
-## Getting Started
+## Objective
+The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain. The player will encounter numerous obstacles like enemies(not done yet), falling obstacles and challenging jumps.
 
-### Dependencies
+## Controls
 
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
-
-### Installing
-
+| Action  | Output |
+| ------------- | ------------- |
+| Spacebar | Jump  |
+| D  | Forward/Move Right |
+| A | Backwards/Move Left |
+| Shift | Dash  |
+| Cursor | Aiming dash |
 * How/where to download your program
 * Any modifications needed to be made to files/folders
 
-### Executing program
+## Videos Used
 
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
+#### [2D platformer animations - Game Code Library](https://www.youtube.com/watch?v=Sg_w8hIbp4Y&t=295s&pp=0gcJCQYKAYcqIYzv)
 
-## Help
+#### [Platformer Dash - Bendux](https://www.youtube.com/watch?v=2kFGmuPHiA0&t=51s)
 
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
+#### [Scrolling Background - Root Games](https://www.youtube.com/watch?v=Wz3nbQPYwss&t=8s)
 
-## Authors
+#### [Tilemap and rule tiles - Pixel Pete](https://www.youtube.com/watch?v=rC55Q7p90qs)
 
-Contributors names and contact info
+#### [Tilemaps + Collision](https://www.youtube.com/watch?v=8UctaO5DwUE&pp=0gcJCQYKAYcqIYzv)
 
-ex. Mr Jones
-ex. [@benpaddlejones](https://github.com/benpaddlejones)
+#### [Falling obstacles - Game code library](https://www.youtube.com/watch?v=xx1oKVTU_gM&t=181s)
 
-## Version History
-
-* 0.2
-    * Various bug fixes and optimizations
-    * See [commit change]() or See [release history]() or see [branch]()
-* 0.1
-    * Initial Release
-
-## License
-
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
-
-## Acknowledgments
-
-Inspiration, code snippets, etc.
-* [Github md syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
-* [TempeHS Unity template](https://github.com/TempeHS/TempeHS_Unity_DevContainer)
+#### [Coin system - MoreBBLAKEYY](https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=109s)
