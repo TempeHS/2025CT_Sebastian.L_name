@@ -2,19 +2,26 @@
 
 Ramen Run
 
-:goberserk:
+# General Information
 
-This game was made a part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
+## Description
+This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
 
-## Getting Started
+## Objective
 
-### Dependencies
 
 * Describe any prerequisites, libraries, OS version, etc., needed before installing program.
 * ex. Windows 10
 
-### Installing
+## Controls
 
+| Action  | Output |
+| ------------- | ------------- |
+| Spacebar | Jump  |
+| D  | Forward/Move Right |
+| A | Backwards/Move Left |
+| Shift | Dash  |
+| Cursor | Aiming dash |
 * How/where to download your program
 * Any modifications needed to be made to files/folders
 
