@@ -24,11 +24,23 @@ The objective of the game is to collect all the necessary ingredients to make so
 
 ##Videos Used
 
-2D platformer animations - Game Code Library
-Platformer Dash - Bendux
-Scrolling Background - Root Games
-Tilemap and rule tiles - Pixel Pete
-Tilemaps + Collision
-Falling obstacles - Game code library
-Coin system - MoreBBLAKEYY
-
+[2D platformer animations - Game Code Library]([url](https://www.youtube.com/watch?v=Sg_w8hIbp4Y&t=295s&pp=0gcJCQYKAYcqIYzv
+))
+[Platformer Dash - Bendux
+]([url](https://www.youtube.com/watch?v=2kFGmuPHiA0&t=51s
+))
+[Scrolling Background - Root Games
+]([url](https://www.youtube.com/watch?v=Wz3nbQPYwss&t=8s
+))
+[Tilemap and rule tiles - Pixel Pete
+]([url](https://www.youtube.com/watch?v=rC55Q7p90qs
+))
+[Tilemaps + Collision
+]([url](https://www.youtube.com/watch?v=8UctaO5DwUE&pp=0gcJCQYKAYcqIYzv
+))
+[Falling obstacles - Game code library
+]([url](https://www.youtube.com/watch?v=xx1oKVTU_gM&t=181s
+))
+[Coin system - MoreBBLAKEYY
+]([url](https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=109s
+))
