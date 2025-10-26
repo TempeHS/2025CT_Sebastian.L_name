@@ -8,10 +8,7 @@ Ramen Run
 This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
 
 ## Objective
-
-
-* Describe any prerequisites, libraries, OS version, etc., needed before installing program.
-* ex. Windows 10
+The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain.
 
 ## Controls
 
