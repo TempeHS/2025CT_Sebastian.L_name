@@ -10,6 +10,9 @@ This game was made as part of a project for a school assignment. The intended to
 ## Objective
 The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain. The player will encounter numerous obstacles like enemies(not done yet), falling obstacles and challenging jumps.
 
+## Story
+Together with my mulitmedia partner, we
+
 ## Controls
 
 | Action  | Output |
