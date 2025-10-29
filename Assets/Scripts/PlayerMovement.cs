@@ -219,7 +219,6 @@ private void UpdateAnimations()
 
     if (_animParams.Contains("moveDirection"))
         anim.SetFloat("moveDirection", horizontal);
-        horizontal = Input.GetAxisRaw("Horizontal");
 
     if (_animParams.Contains("verticalVelocity"))
             anim.SetFloat("verticalVelocity", rb.velocity.y);
