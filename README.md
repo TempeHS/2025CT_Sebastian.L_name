@@ -1,17 +1,16 @@
-2025CT_Sebastian.L_Thera.T
+# 2025CT_Sebastian.L_Thera.T
 
-Ramen Run
+# Ramen Run
 
 # General Information
 
 ## Description
-This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar.In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting
+This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar. In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting.
 
 ## Objective
-The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain. The player will encounter numerous obstacles like enemies(not done yet), falling obstacles and challenging jumps.
+The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain. The player will encounter numerous obstacles like enemies(not done yet), falling obstacles and challenging jumps. Your goal is to beat multiple levels, collecting ingrediants without dying in order to create a meal to the king. By doing so, the main character is able to return home with collected funds.
 
-## Story
-Together with my mulitmedia partner, we
+
 
 ## Controls
 
