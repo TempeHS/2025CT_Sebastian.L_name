@@ -3,7 +3,7 @@
 # Ramen Run
 
 ## Gameplay Showcase
-![Alt text](.WorkingFiles/gameplay.gif)
+![Alt text](.WorkingFiles/Gameplay.gif)
 
 ## Description
 This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar. In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting.
@@ -11,7 +11,7 @@ This game was made as part of a project for a school assignment. The intended to
 ## Objective
 The objective of the game is to collect all the necessary ingredients to make soup while avoding obstacles and scaling the terrain. The player will encounter numerous obstacles like enemies(not done yet), falling obstacles and challenging jumps. Your goal is to beat multiple levels, collecting ingrediants without dying in order to create a meal to the king. By doing so, the main character is able to return home with collected funds.
 
-
+# User Documentation
 
 ## Controls
 
@@ -24,6 +24,16 @@ The objective of the game is to collect all the necessary ingredients to make so
 | Cursor | Aiming dash |
 * How/where to download your program
 * Any modifications needed to be made to files/folders
+
+## Jump
+![Alt text](.WorkingFiles/Jumpheight.gif)
+Jumping: The longer the jump button is held, the higher the player jumps — allowing for precise control over jump height and timing.
+
+## Coyote Jump
+![Alt text](.WorkingFiles/CJ.gif)
+
+
+
 
 ## Videos Used
 
