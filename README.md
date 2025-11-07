@@ -3,7 +3,7 @@
 # Ramen Run
 
 ## Gameplay Showcase
-[View gameplay walkthrough GIF](assets/.gif)
+![Alt text](.WorkingFiles/gameplay.gif)
 
 ## Description
 This game was made as part of a project for a school assignment. The intended topic and idea revolved around the theme "Games for change" although through taking influence from multimedia partners the thematic details and creative design changed,although the core intended gameplay remained relatively similar. In the game you play as an imperial dynasty chef, collecting ingredients across the land. The game includes multiple platforms and obstacles aswell as jumps and falling objects making platforming challenging and interesting.
