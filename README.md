@@ -22,8 +22,7 @@ The objective of the game is to collect all the necessary ingredients to make so
 | A | Backwards/Move Left |
 | Shift | Dash  |
 | Cursor | Aiming dash |
-* How/where to download your program
-* Any modifications needed to be made to files/folders
+
 
 ## Jump
 ![Alt text](.WorkingFiles/Jumpheight.gif)
@@ -37,14 +36,15 @@ Allows players to jump shortly after leaving a platform, giving a small grace pe
 ![Alt text](.WorkingFiles/Mouse.gif)
 The Mouse-Aimed Dash mechanic allows players to quickly dash in the direction of their mouse cursor, offering precise control and dynamic movement.
 
-## PlayerMovement Code
+## PlayerMovement Code (Dash Feature)
+![Alt text](.WorkingFiles/Code.png)
 
 
 # Assets
 [View Assets](https://drive.google.com/drive/folders/1jqBWPJA-WdNTHMVoVVEi342WFsgfYDFL?usp=drive_link)
 
 # Acknowledgements
-### Sprite Creator - (@thera.tran765@education.nsw.gov.au)
+### Sprite Creator - (thera.tran765@education.nsw.gov.au)
 ### Tile map used - [pixel frog - Treasure Hunters](https://pixelfrog-assets.itch.io/treasure-hunters)
 
 # Videos Used
