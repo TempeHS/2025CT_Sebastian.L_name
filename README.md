@@ -27,26 +27,37 @@ The objective of the game is to collect all the necessary ingredients to make so
 
 ## Jump
 ![Alt text](.WorkingFiles/Jumpheight.gif)
-Jumping: The longer the jump button is held, the higher the player jumps — allowing for precise control over jump height and timing.
+The longer the jump button is held, the higher the player jumps — allowing for precise control over jump height and timing.
 
 ## Coyote Jump
 ![Alt text](.WorkingFiles/CJ.gif)
+Allows players to jump shortly after leaving a platform, giving a small grace period to make jumping more forgiving and responsive. This improves platforming feel and reduces frustration from near miss jumps.
+
+## Dashes
+![Alt text](.WorkingFiles/Mouse.gif)
+The Mouse-Aimed Dash mechanic allows players to quickly dash in the direction of their mouse cursor, offering precise control and dynamic movement.
+
+## PlayerMovement Code
 
 
+# Assets
+[View Assets](https://drive.google.com/drive/folders/1jqBWPJA-WdNTHMVoVVEi342WFsgfYDFL?usp=drive_link)
 
+# Acknowledgements
+### Sprite Creator - (@thera.tran765@education.nsw.gov.au)
+### Tile map used - [pixel frog - Treasure Hunters](https://pixelfrog-assets.itch.io/treasure-hunters)
 
-## Videos Used
+# Videos Used
 
 #### [2D platformer animations - Game Code Library](https://www.youtube.com/watch?v=Sg_w8hIbp4Y&t=295s&pp=0gcJCQYKAYcqIYzv)
-
 #### [Platformer Dash - Bendux](https://www.youtube.com/watch?v=2kFGmuPHiA0&t=51s)
-
 #### [Scrolling Background - Root Games](https://www.youtube.com/watch?v=Wz3nbQPYwss&t=8s)
-
 #### [Tilemap and rule tiles - Pixel Pete](https://www.youtube.com/watch?v=rC55Q7p90qs)
-
 #### [Tilemaps + Collision](https://www.youtube.com/watch?v=8UctaO5DwUE&pp=0gcJCQYKAYcqIYzv)
-
 #### [Falling obstacles - Game code library](https://www.youtube.com/watch?v=xx1oKVTU_gM&t=181s)
-
 #### [Coin system - MoreBBLAKEYY](https://www.youtube.com/watch?v=5GWRPwuWtsQ&t=109s)
+
+
+
+## License
+This project is licensed under the GNU Public License - see the LICENSE.md file for details.
